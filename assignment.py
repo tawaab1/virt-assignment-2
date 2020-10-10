@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 import argparse
 import openstack
+
 import time
 
-connection = openstack.connectionect(cloud_name='openstack')
+connection = openstack.connect(cloud_name='openstack')
 
 IMAGE = 'ubuntu-minimal-16.04-x86_64'
 FLAVOUR = 'c1.c1r1'
@@ -22,9 +23,9 @@ def create():
     network = connection.network.find_network('tawaab1-network')
     if network is None:
         network = connection.network.create_network(name='tawaab1-network')
-        print("Network succesfully created")
+        print("Network created")
     else: 
-        print("This network already exists")
+        print("Network already exists")
 
     '''Creating the subnet - tawaab1-subnet'''
 
@@ -36,7 +37,7 @@ def create():
          ip_version=IP_VERSION,
          cidr=CIDR
          )
-         print("Subnet has been successfully created")
+         print("Subnet created")
     else:
          print("Subnet already exists")
 
@@ -48,10 +49,10 @@ def create():
         tawaab1_rtr = connection.network.create_router(name='tawaab1-rtr',
         admin_state_up=True,
         ext_gateway_net_id=public_net.id)
-        print("Router successfully created")
+        print("Router created")
 
     else:
-        print("This Router already exists")
+        print("Router already exists")
 
     image = connection.compute.find_image(IMAGE)
     flavor = connection.compute.find_flavor(FLAVOUR)

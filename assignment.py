@@ -2,7 +2,6 @@
 import argparse
 import openstack
 
-import time
 
 connection = openstack.connect(cloud_name='openstack')
 
@@ -104,14 +103,13 @@ def create():
     else:
         print("DB server already exists")
 
-        '''Create and Assign the floating IP'''
+        '''Create the floating IP'''
         server = connection.compute.find_server('tawaab1-web')
         floating_ip = connection.network.create_ip(floating_network_id=public_net.id)
         connection.compute.add_floating_ip_to_server(server, floating_ip.floating_ip_address)
 
 def run():
-    ''' Start  a set of Openstack virtual machines
-    if they are not already running.
+    ''' Start VM if not running
     '''
     server_list = ['tawaab1-web', 'tawaab1-app', 'tawaab1-db']
     for serv in server_list:
@@ -127,56 +125,53 @@ def run():
 
 
 def stop():
-    ''' Stop  a set of Openstack virtual machines
-    if they are running.
+    ''' Stop  VM if running
     '''
     server_list = ['tawaab1-web', 'tawaab1-app', 'tawaab1-db']
-    for serv in server_list:
-        server = connection.compute.find_server(serv)
+    for serve in server_list:
+        server = connection.compute.find_server(serve)
         if server is None:
-            print(serv + "not found")
+            print(serve + "not found")
         else:
             if connection.compute.get_server(server).status == "ACTIVE":
                 connection.compute.stop_server(server)
-                print(serv + " has been stopped successfully")
+                print(serve + " has been stopped successfully")
             else:
-                print(serv + " is not active so has not been changed")
+                print(serve + " remains changed")
 
 
 def destroy():
-    ''' Tear down the set of Openstack resources 
-    produced by the create action
+    ''' Destroy VM
     '''
     server_list = ['tawaab1-web', 'tawaab1-app', 'tawaab1-db']
-    for serv in server_list:
-        server = connection.compute.find_server(serv)
+    for serve in server_list:
+        server = connection.compute.find_server(serve)
         if server is None:
-            print(serv + " server already does not exist")
+            print(serve + " server does not exist")
         else:
             connection.compute.delete_server(server)
-            print(serv + "server has been deleted")
+            print(serve + "server deleted")
 
     tawaab1_rtr = connection.network.find_router('tawaab1-rtr')
     if tawaab1_rtr is None:
-        print("router already does not exist")
+        print("router does not exist")
     else:
         connection.network.delete_router(tawaab1_rtr)
-        print("router has been deleted")
+        print("router deleted")
 
-    time.sleep(5)
     tawaab1_subnet = connection.network.find_subnet('tawaab1-subnet')
     if tawaab1_subnet is None:
-        print("subnet already does not exist")
+        print("subnet does not exist")
     else:
         connection.network.delete_subnet(tawaab1_subnet)
-        print("subnet has been deleted")
+        print("subnet deleted")
 
     tawaab1_network = connection.network.find_network('tawaab1-network')
     if tawaab1_network is None:
-        print("network already does not exist")
+        print("network does not exist")
     else:
         connection.network.delete_network(tawaab1_network)
-        print("network has been deleted")
+        print("network deleted")
 
 
 def status():
